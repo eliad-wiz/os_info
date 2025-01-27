@@ -123,3 +123,10 @@ pub use crate::{bitness::Bitness, info::Info, os_type::Type, version::Version};
 pub fn get() -> Info {
     imp::current_platform()
 }
+
+/// Returns information about the current operating system, but only in a safe manner
+/// (without executing any external commands).
+#[cfg(target_os = "linux")]
+pub fn get_info_safe() -> Info {
+    imp::get_info_safe()
+}

@@ -5,17 +5,33 @@ use log::trace;
 
 use crate::{architecture, bitness, Info, Type};
 
-pub fn current_platform() -> Info {
+fn get_release_info(from_files_only: bool) -> Info {
+    let info = match from_files_only {
+        true => None,
+        false => lsb_release::get(),
+    };
+
+    info.or_else(file_release::get)
+        .unwrap_or_else(|| Info::with_type(Type::Linux))
+}
+
+fn get_info(from_files_only: bool) -> Info {
     trace!("linux::current_platform is called");
 
-    let mut info = lsb_release::get()
-        .or_else(file_release::get)
-        .unwrap_or_else(|| Info::with_type(Type::Linux));
+    let mut info = get_release_info(from_files_only);
     info.bitness = bitness::get();
     info.architecture = architecture::get();
 
     trace!("Returning {:?}", info);
     info
+}
+
+pub fn current_platform() -> Info {
+    get_info(false)
+}
+
+pub fn get_info_safe() -> Info {
+    get_release_info(false)
 }
 
 #[cfg(test)]
