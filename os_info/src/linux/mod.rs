@@ -30,8 +30,10 @@ pub fn current_platform() -> Info {
     get_info(false)
 }
 
+/// extract os info from files only (without invoking external commands)
 pub fn get_info_safe() -> Info {
-    get_release_info(false)
+    let from_files_only = true;
+    get_release_info(from_files_only)
 }
 
 #[cfg(test)]
